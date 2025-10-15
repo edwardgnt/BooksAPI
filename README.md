@@ -1,5 +1,11 @@
 # 📚 Books API (Dapper, .NET 9)
 
+![.NET](https://img.shields.io/badge/.NET-9.0-blueviolet)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Dapper](https://img.shields.io/badge/Dapper-ORM-orange)
+![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
+![Build](https://github.com/edwardgnt/BooksAPI/actions/workflows/dotnet-ci.yml/badge.svg)
+
 Production-style REST API with **DTOs**, **Repository Pattern**, and **Filtering + Sorting + Pagination**.
 - Data access: **Dapper** (`Microsoft.Data.SqlClient`)
 - Error shape: **ProblemDetails** (RFC 7807)
