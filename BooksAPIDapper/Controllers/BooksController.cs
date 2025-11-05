@@ -39,7 +39,6 @@ namespace BooksAPIDapper.Controllers
 
             var page = await _repo.GetFilteredPagedAsync(filter);
 
-            // Map to DTO
             var result = new
             {
                 items = page.Items.Select(b => new BookReadDto

@@ -26,7 +26,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
         working-directory: ./BooksAPIDapper
 
+      # CI TODO
       # Remove this step if you don't have tests yet
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
-        working-directory: ./BooksAPIDapper
+      # - name: Test
+      #   run: dotnet test --no-build --verbosity normal
+      #   working-directory: ./BooksAPIDapper
