@@ -6,28 +6,62 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  DOTNET_VERSION: "10.0.x"
+  SA_PASSWORD: ${{ secrets.BOOKSAPI_SA_PASSWORD }}
+  ConnectionStrings__DefaultConnection: "Server=localhost,14333;Database=BooksDb;User Id=sa;Password=${{ secrets.BOOKSAPI_SA_PASSWORD }};Encrypt=False;TrustServerCertificate=True"
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "9.0.x"
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Start SQL Server container
+        run: docker compose up -d sqlserver
+
+      - name: Wait for SQL Server
+        run: |
+          for i in {1..30}; do
+            if docker exec booksapi-sqlserver /opt/mssql-tools18/bin/sqlcmd \
+              -S localhost \
+              -U sa \
+              -P "$SA_PASSWORD" \
+              -C \
+              -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "SQL Server is ready."
+              exit 0
+            fi
+
+            echo "Waiting for SQL Server..."
+            sleep 5
+          done
+
+          echo "SQL Server did not become ready in time."
+          docker logs booksapi-sqlserver
+          exit 1
+
+      - name: Initialize database
+        run: |
+          docker exec -i booksapi-sqlserver /opt/mssql-tools18/bin/sqlcmd \
+            -S localhost \
+            -U sa \
+            -P "$SA_PASSWORD" \
+            -C \
+            -i /dev/stdin < sql/init/01-create-books-db.sql
 
       - name: Restore
-        run: dotnet restore
-        working-directory: ./BooksAPIDapper
+        run: dotnet restore BooksAPIDapper.sln
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
-        working-directory: ./BooksAPIDapper
+        run: dotnet build BooksAPIDapper.sln --configuration Release --no-restore
 
-      # CI TODO
-      # Remove this step if you don't have tests yet
-      # - name: Test
-      #   run: dotnet test --no-build --verbosity normal
-      #   working-directory: ./BooksAPIDapper
+      - name: Test
+        run: dotnet test BooksAPIDapper.sln --configuration Release --no-build --verbosity normal
