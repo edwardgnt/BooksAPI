@@ -98,9 +98,12 @@ namespace BooksAPIDapper.Data
 
         public async Task<int> CreateAsync(Book book)
         {
-            var sql = @"INSERT INTO Books (Title, Author, YearPublished, CreatedAt, IsArchived, Price)
-                        VALUES (@Title, @Author, @YearPublished, @CreatedAt, @IsArchived, @Price);
-                        SELECT CAST(SCOPE_IDENTITY() as int)";
+            var sql = @"
+                INSERT INTO dbo.Books (Title, Author, YearPublished, Price)
+                OUTPUT INSERTED.Id
+                VALUES (@Title, @Author, @YearPublished, @Price);
+            ";
+
             return await _db.ExecuteScalarAsync<int>(sql, book);
         }
 
