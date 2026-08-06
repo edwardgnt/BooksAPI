@@ -24,13 +24,13 @@ namespace BooksAPIDapper.Data
 
             var p = new DynamicParameters();
 
-            if (filter.MinPrice.HasValue) 
-            { 
+            if (filter.MinPrice.HasValue)
+            {
                 baseSql += " AND Price >= @MinPrice"; p.Add("MinPrice", filter.MinPrice.Value);
             }
 
-            if (filter.MaxPrice.HasValue) 
-            { 
+            if (filter.MaxPrice.HasValue)
+            {
                 baseSql += " AND Price <= @MaxPrice"; p.Add("MaxPrice", filter.MaxPrice.Value);
             }
 
@@ -40,13 +40,15 @@ namespace BooksAPIDapper.Data
                 p.Add("Search", $"%{filter.Search}%");
             }
 
-            if (filter.Start.HasValue) { 
-                baseSql += " AND CreatedAt >= @Start"; 
+            if (filter.Start.HasValue)
+            {
+                baseSql += " AND CreatedAt >= @Start";
                 p.Add("Start", filter.Start.Value);
             }
 
-            if (filter.End.HasValue) { 
-                baseSql += " AND CreatedAt <= @End"; 
+            if (filter.End.HasValue)
+            {
+                baseSql += " AND CreatedAt <= @End";
                 p.Add("End", filter.End.Value);
             }
 
